@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
-require 'net/http'
 require 'faraday'
-require 'uri'
 
 servers = [
   {
@@ -37,6 +35,7 @@ SCHEDULER.every '300s', :first_in => 0 do |job|
     conn.basic_auth(server[:user], server[:pass]) if server[:auth]
 
     request = conn.get
+    binding.remote_pry
 
     if request.status == 200
       result = 1
@@ -57,5 +56,5 @@ SCHEDULER.every '300s', :first_in => 0 do |job|
 
   binding.remote_pry
   # print statuses to dashboard
-  send_event('server-status', {items: statuses})
+  send_event('uptime-check', {items: statuses})
 end
