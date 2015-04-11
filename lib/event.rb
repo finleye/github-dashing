@@ -1,27 +1,29 @@
 module GithubDashing
-	class Event
-		
-		# Arbitrary unique type identifier
-		attr_accessor :type
+  class Event
 
-		# DateTime object of when the event happened
-		attr_accessor :datetime
+    # Arbitrary unique type identifier
+    attr_accessor :type
 
-		# Optional key (e.g. author name)
-		attr_accessor :key
+    # DateTime object of when the event happened
+    attr_accessor :datetime
 
-		# Optional value
-		attr_accessor :value
+    # Optional key (e.g. author name)
+    attr_accessor :key
 
-		def initialize(args={})
-			args.each do |k,v|
-				instance_variable_set("@#{k}", v) unless v.nil?
-			end
-		end
+    # Optional value
+    attr_accessor :value
 
-		def to_s
-			"GithubDashing::Event: #{@type} at #{@datetime}"
-		end
+    attr_accessor :repo, :milestone
 
-	end
+    def initialize(args={})
+      args.each do |k,v|
+        instance_variable_set("@#{k}", v) unless v.nil?
+      end
+    end
+
+    def to_s
+      "GithubDashing::Event: #{@type} at #{@datetime}"
+    end
+
+  end
 end

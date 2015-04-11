@@ -16,6 +16,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.7)
     backports (3.6.4)
+    coderay (1.1.0)
     coffee-script (2.2.0)
       coffee-script-source
       execjs
@@ -46,11 +47,19 @@ GEM
     hike (1.2.3)
     i18n (0.7.0)
     json (1.7.7)
+    method_source (0.8.2)
     minitest (5.5.1)
     multi_json (1.10.1)
     multipart-post (2.0.0)
     octokit (3.7.1)
       sawyer (~> 0.6.0, >= 0.5.3)
+    pry (0.9.12.6)
+      coderay (~> 1.0)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+    pry-remote (0.1.8)
+      pry (~> 0.9)
+      slop (~> 3.0)
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
@@ -87,6 +96,7 @@ GEM
       rack-test
       sinatra (~> 1.4.0)
       tilt (~> 1.3)
+    slop (3.6.0)
     sprockets (2.10.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -116,6 +126,8 @@ DEPENDENCIES
   i18n
   json (~> 1.7.7)
   octokit
+  pry
+  pry-remote
   rake
   rspec
   rspec-mocks
