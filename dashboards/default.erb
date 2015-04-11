@@ -1,57 +1,64 @@
 <% content_for(:title) { "Release Metrics" } %>
 <div class="gridster highcontrast">
-  <h1 class="header">Release Metrics</h1>
   <ul>
-    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+    <li data-row="1" data-col="1" data-sizex="7" data-sizey="1">
+      <div
+        data-id="header"
+        data-view="Text"
+        data-title="Release Metrics"
+        data-text="Release name">
+      </div>
+    </li>
+    <li data-row="2" data-col="1" data-sizex="1" data-sizey="1">
       <div
         data-id="no-state-count"
         data-view="Number"
         data-title="No State">
       </div>
     </li>
-    <li data-row="1" data-col="2" data-sizex="1" data-sizey="1">
+    <li data-row="2" data-col="2" data-sizex="1" data-sizey="1">
       <div
         data-id="needs-spec-count"
         data-view="Number"
         data-title="Needs Spec">
       </div>
     </li>
-    <li data-row="1" data-col="3" data-sizex="1" data-sizey="1">
+    <li data-row="2" data-col="3" data-sizex="1" data-sizey="1">
       <div
         data-id="needs-design-count"
         data-view="Number"
         data-title="Needs Design">
       </div>
     </li>
-    <li data-row="1" data-col="4" data-sizex="1" data-sizey="1">
+    <li data-row="2" data-col="4" data-sizex="1" data-sizey="1">
       <div
         data-id="ready-for-development-count"
         data-view="Number"
         data-title="Ready for Dev">
       </div>
     </li>
-    <li data-row="1" data-col="5" data-sizex="1" data-sizey="1">
+    <li data-row="2" data-col="5" data-sizex="1" data-sizey="1">
       <div
         data-id="under-development-count"
         data-view="Number"
         data-title="Under Dev">
       </div>
     </li>
-    <li data-row="1" data-col="6" data-sizex="1" data-sizey="1">
+    <li data-row="2" data-col="6" data-sizex="1" data-sizey="1">
       <div
         data-id="qa-count"
         data-view="Number"
         data-title="QA">
       </div>
     </li>
-    <li data-row="1" data-col="7" data-sizex="1" data-sizey="1">
+    <li data-row="2" data-col="7" data-sizex="1" data-sizey="1">
       <div
         data-id="done-count"
         data-view="Number"
         data-title="Done Count">
       </div>
     </li>
-    <li data-row="2" data-col="1" data-sizex="2" data-sizey="2">
+    <li data-row="3" data-col="1" data-sizex="2" data-sizey="2">
       <div
         data-id="progress"
         data-view="Meter"
@@ -60,14 +67,14 @@
         data-max="100">
       </div>
     </li>
-    <li data-row="2" data-col="3" data-sizex="1" data-sizey="2">
+    <li data-row="3" data-col="3" data-sizex="2" data-sizey="2">
       <div
-        data-id="uptime-check"
-        data-view="UptimeCheck"
-        data-title="Uptime Check">
+        data-id="server-status"
+        data-view="ServerStatus"
+        data-title="Server Status">
       </div>
     </li>
-    <li data-row="2" data-col="4" data-sizex="4" data-sizey="2">
+    <li data-row="3" data-col="5" data-sizex="3" data-sizey="2">
       <div
         data-id="travis"
         data-view="NestedList"

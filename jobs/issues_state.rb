@@ -23,5 +23,12 @@ SCHEDULER.every '5m', :first_in => '1s' do |job|
   state_counts.each do |state, count|
     send_event("#{state.gsub('_','-')}-count", { current: count, last: count })
   end
-  send_event('progress',   { value: ((state_counts["done"].to_f/issues.count.to_f)*100).round(0) })
+  current_milestone = backend.current_milestone(
+    :orgas=>(ENV['ORGAS'].split(',') if ENV['ORGAS']),
+    :repos=>(ENV['REPOS'].split(',') if ENV['REPOS']),
+    :since=>ENV['SINCE']
+  )
+
+  send_event('progress', { value: ((state_counts["done"].to_f/issues.count.to_f)*100).round(0) })
+  send_event('header',   { text: "#{current_milestone.title} due in #{current_milestone.due_in.to_i} day#{'s' if current_milestone.due_in.to_i > 1}"})
 end

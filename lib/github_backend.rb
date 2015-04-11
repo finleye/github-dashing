@@ -184,6 +184,24 @@ class GithubBackend
     return events
   end
 
+  def current_milestone(opts)
+    opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
+    events = GithubDashing::EventCollection.new
+
+    repo = self.get_repos(opts).first
+
+    begin
+      milestones = request('list_milestones', [repo, {}])
+      current_release = milestones.select{|m| m.state == 'open' && m.due_on.present? }.sort_by{|m| m.due_on}.first
+      due_in = (current_release.due_on.beginning_of_day - Time.now.utc.beginning_of_day) / 1.day
+      event = GithubDashing::Event.new({ title: current_release.title, due_in: due_in })
+    rescue Octokit::Error => exception
+      Raven.capture_exception(exception)
+    end
+
+    return event
+  end
+
   # TODO Break up by actual status, currently not looking at closed_at date
   # Returns EventCollection
   def pull_count_by_status(opts)

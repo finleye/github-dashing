@@ -5,20 +5,23 @@ servers = [
   {
     name: 'Rza',
     url: 'http://rza-production.elasticbeanstalk.com/stats',
+    path: '/stats',
     auth: 'basic',
     user: ENV['RZA_USER'],
     pass: ENV['RZA_PASS']
   },
   {
-    name: 'ES Master 1',
-    url: 'insights-cluster-master-1.contentlycontrol.com/status',
+    name: 'Insights ES Master 1',
+    url: 'http://insights-cluster-master-1.contentlycontrol.com:8080',
+    path: '/_status',
     auth: 'basic',
     user: ENV['ES_USER'],
     pass: ENV['ES_PASS']
   },
   {
-    name: 'ES Master 2',
-    url: 'insights-cluster-master-2.contentlycontrol.com/status',
+    name: 'Insights ES Master 2',
+    url: 'http://insights-cluster-master-2.contentlycontrol.com:8080',
+    path: '/_status',
     auth: 'basic',
     user: ENV['ES_USER'],
     pass: ENV['ES_PASS']
@@ -30,18 +33,18 @@ SCHEDULER.every '300s', :first_in => 0 do |job|
 
   # check status for each server
   servers.each do |server|
+    begin
+      conn = Faraday.new(url: server[:url])
+      conn.basic_auth(server[:user], server[:pass]) if server[:auth] == 'basic'
 
-    conn = Faraday.new(url: server[:url])
-    conn.basic_auth(server[:user], server[:pass]) if server[:auth]
+      request = conn.get server[:path]
 
-    request = conn.get
-    binding.remote_pry
-
-    if request.status == 200
-      result = 1
-    else
+      result = (request.status == 200) ? 1 : 0
+    rescue => e
       result = 0
     end
+
+    binding.remote_pry if result == 0
 
     if result == 1
       arrow = "icon-ok-sign"
@@ -54,7 +57,6 @@ SCHEDULER.every '300s', :first_in => 0 do |job|
     statuses.push({label: server[:name], value: result, arrow: arrow, color: color})
   end
 
-  binding.remote_pry
   # print statuses to dashboard
   send_event('uptime-check', {items: statuses})
 end
