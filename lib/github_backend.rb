@@ -18,139 +18,6 @@ class GithubBackend
   end
 
   # Returns EventCollection
-  def contributor_stats_by_author(opts)
-    opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-    events = GithubDashing::EventCollection.new
-    self.get_repos(opts).each do |repo|
-      # Can't limit timeframe
-      begin
-        stats = request('contributors_stats', [repo]) || []
-        next unless stats.is_a?(Array)
-        stats.each do |stat|
-          stat.weeks.each do |week|
-            next unless stat.author
-            events << GithubDashing::Event.new({
-              type: "commits_additions",
-              key: stat.author.login.dup,
-              datetime: Time.at(week.w).to_datetime,
-              value: week.a
-            }) if week.a > 0
-            events << GithubDashing::Event.new({
-              type: "commits_deletions",
-              key: stat.author.login.dup,
-              datetime: Time.at(week.w).to_datetime,
-              value: week.d
-            }) if week.d > 0
-            events << GithubDashing::Event.new({
-              type: "commits",
-              key: stat.author.login.dup,
-              datetime: Time.at(week.w).to_datetime,
-              value: week.c
-            }) if week.c > 0
-          end
-        end
-      rescue Octokit::Error => exception
-        Raven.capture_exception(exception)
-      end
-    end
-
-    return events
-  end
-
-  # Returns EventCollection
-  def issue_comment_count_by_author(opts)
-    opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-    events = GithubDashing::EventCollection.new
-    self.get_repos(opts).each do |repo|
-      begin
-        request('issues_comments', [repo, {:since => opts.since}]).each do |issue|
-          next if not issue.user
-          events << GithubDashing::Event.new({
-            type: "issues_comments",
-            key: issue.user.login.dup,
-            datetime: issue.created_at.to_datetime
-          })
-        end
-      rescue Octokit::Error => exception
-        Raven.capture_exception(exception)
-      end
-    end
-
-    return events
-  end
-
-  # Returns EventCollection
-  def pull_count_by_author(opts)
-    opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-    events = GithubDashing::EventCollection.new
-    self.get_repos(opts).each do |repo|
-      begin
-        request('pulls', [repo, {:state => 'all', :since => opts.since}]).each do |pull|
-          state_desc = (pull.state == 'open') ? 'opened' : 'closed'
-          next if not pull.user
-          events << GithubDashing::Event.new({
-            type: "pulls_#{state_desc}",
-            key: pull.user.login.dup,
-            datetime: pull.created_at.to_datetime
-          })
-        end
-      rescue Octokit::Error => exception
-        Raven.capture_exception(exception)
-      end
-    end
-
-    return events
-  end
-
-  # Returns EventCollection
-  def pull_comment_count_by_author(opts)
-    opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-    events = GithubDashing::EventCollection.new
-    self.get_repos(opts).each do |repo|
-      begin
-        request('pulls_comments', [repo, {:since => opts.since}]).each do |comment|
-          next if not comment.user
-          events << GithubDashing::Event.new({
-            type: 'pulls_comments',
-            key: comment.user.login.dup,
-            datetime: comment.created_at.to_datetime
-          })
-        end
-      rescue Octokit::Error => exception
-        Raven.capture_exception(exception)
-      end
-    end
-
-    return events
-  end
-
-  # Returns EventCollection
-  def issue_count_by_author(opts)
-    opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
-    events = GithubDashing::EventCollection.new
-    self.get_repos(opts).each do |repo|
-      begin
-        issues = request('issues', [repo, {:since => opts.since,:state => 'all'}])
-        issues.each do |issue|
-          next if not issue.user
-
-          state_desc = (issue.state == 'open') ? 'opened' : 'closed'
-          events << GithubDashing::Event.new({
-            # TODO Attribute to closer, not to issue author
-            # type: "issues_#{state_desc}",
-            type: "issues_opened",
-            key: issue.user.login.dup,
-            datetime: issue.created_at.to_datetime
-          })
-        end
-      rescue Octokit::Error => exception
-        Raven.capture_exception(exception)
-      end
-    end
-    return events
-  end
-
-  # Returns EventCollection
   def issue_count_by_state_label(opts)
     opts = OpenStruct.new(opts) unless opts.kind_of? OpenStruct
     events = GithubDashing::EventCollection.new
@@ -163,6 +30,9 @@ class GithubBackend
 
         issues.reject!{ |issue| issue.milestone.blank?}
         issues.select!{ |issue| issue.milestone.title =~ /36\.2/}
+        issues.reject! do |issue|
+          issue.pull_request.html_url if issue.pull_request and issue.state == 'open'
+        end
 
         issues.each do |issue|
           state_label = issue.labels.map(&:name).select{|label| label =~ /state/}.first

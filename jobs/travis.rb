@@ -15,12 +15,10 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
   builds = []
 
   # Only look at release branches (x.y) and master, not at tags (x.y.z)
-  branch_whitelist = /^(\d+\.\d+$|master)/
+  branch_whitelist = /^(\d+\.\d+.*$|master)/
   branch_blacklist_by_repo = {}
   branch_blacklist_by_repo = JSON.parse(ENV['TRAVIS_BRANCH_BLACKLIST']) if ENV['TRAVIS_BRANCH_BLACKLIST']
 
-  # TODO Move to configuration
-  repo_slug_replacements = [/(silverstripe-australia\/|silverstripe-labs\/|silverstripe\/|silverstripe-)/,'']
 
   if ENV['ORGAS']
     ENV['ORGAS'].split(',').each do |orga|
@@ -36,7 +34,6 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 
   items = repo_slugs.map do |repo_slug|
     label = repo_slug
-    label = repo_slug.gsub(repo_slug_replacements[0],repo_slug_replacements[1]) if repo_slug_replacements
     item = {
       'label' => label,
       'class' => 'none',
@@ -47,18 +44,14 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
     # Travis info
     repo_branches = travis_backend.get_branches_by_repo(repo_slug)
     if repo_branches and repo_branches['branches'].length > 0
-      # Latest builds are listed under "branches", but their corresponding branch name
-      # is stored through the "commits" association
       items = repo_branches['branches']
         .select do |branch|
           commit = repo_branches['commits'].find{|commit|commit['id'] == branch['commit_id']}
           branch_name = commit['branch']
 
-          # Ignore branches not in whitelist
           if not branch_whitelist.match(branch_name)
             false
-          # Ignore branches specifically blacklisted
-          elsif branch_blacklist_by_repo.has_key?(repo_slug) and branch_blacklist_by_repo[repo_slug].include?(branch_name)
+          elsif Time.parse(branch['finished_at']).beginning_of_day < 4.weeks.ago
             false
           else
             true
@@ -78,7 +71,6 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
 
       item['class'] = (items.find{|b|b["class"] == 'bad'}) ? 'bad' : 'good'
       item['url'] = items.count ? 'https://travis-ci.org/%s' % repo_slug : ''
-      # Only show items if some are failing
       item['items'] = (items.find{|b|b["class"] == 'bad'}) ? items : []
     end
 

@@ -11,27 +11,27 @@ class TravisBackend
     # TODO Init HTTP client
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
-    @api_base = 'https://api.travis-ci.org/'
+    @api_base = 'https://api.travis-ci.com/'
   end
 
   # Returns all repositories for a given organization
   def get_repos_by_orga(orga)
-    return self.fetch("repos?owner_name=#{orga}&access_token=#{ENV['TRAVIS_TOKEN']}")
+    return self.fetch("repos?owner_name=#{orga}")
   end
   # repo (string) Fully qualified name, incl. owner
   # Returns a single repository as a Hash
   def get_repo(repo)
-    return self.fetch("repos/#{repo}?access_token=#{ENV['TRAVIS_TOKEN']}")
+    return self.fetch("repos/#{repo}")
   end
 
   # repo (string) Fully qualified name, incl. owner
   # Returns a single repository as a Hash
   def get_builds_by_repo(repo)
-    return self.fetch("repos/#{repo}/builds?access_token=#{ENV['TRAVIS_TOKEN']}")
+    return self.fetch("repos/#{repo}/builds")
   end
 
   def get_branches_by_repo(repo)
-    return self.fetch("repos/#{repo}/branches?access_token=#{ENV['TRAVIS_TOKEN']}")
+    return self.fetch("/repos/#{repo}/branches")
   end
 
   # Returns a Hash
@@ -39,7 +39,11 @@ class TravisBackend
     @logger.debug 'Fetching %s%s' % [@api_base,path]
 
     conn = Faraday.new @api_base, :ssl => {:verify => false}
-    response = conn.get path
+
+    response = conn.get do |req|
+      req.url path
+      req.headers['Authorization'] = "token #{ENV['TRAVIS_TOKEN']}"
+    end
 
     # TODO Better error handling
     return response.status == 200 ? JSON.parse(response.body) : false
