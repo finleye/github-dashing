@@ -15,24 +15,23 @@ class TravisBackend
   end
 
   # Returns all repositories for a given organization
-  def get_repos_by_orga(orga) 
-    return self.fetch("repos?owner_name=#{orga}")
+  def get_repos_by_orga(orga)
+    return self.fetch("repos?owner_name=#{orga}&access_token=#{ENV['TRAVIS_TOKEN']}")
   end
-
   # repo (string) Fully qualified name, incl. owner
   # Returns a single repository as a Hash
   def get_repo(repo)
-    return self.fetch("repos/#{repo}")
+    return self.fetch("repos/#{repo}?access_token=#{ENV['TRAVIS_TOKEN']}")
   end
 
   # repo (string) Fully qualified name, incl. owner
   # Returns a single repository as a Hash
   def get_builds_by_repo(repo)
-    return self.fetch("repos/#{repo}/builds")
+    return self.fetch("repos/#{repo}/builds?access_token=#{ENV['TRAVIS_TOKEN']}")
   end
 
   def get_branches_by_repo(repo)
-    return self.fetch("repos/#{repo}/branches")
+    return self.fetch("repos/#{repo}/branches?access_token=#{ENV['TRAVIS_TOKEN']}")
   end
 
   # Returns a Hash
@@ -45,5 +44,4 @@ class TravisBackend
     # TODO Better error handling
     return response.status == 200 ? JSON.parse(response.body) : false
   end
-
 end

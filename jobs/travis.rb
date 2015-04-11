@@ -73,9 +73,9 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
             'title'=>branch['finished_at'],
             'result'=>branch['state'],
             'url'=> 'https://travis-ci.org/%s/builds/%d' % [repo_slug,branch['id']]
-          } 
+          }
         end
-      
+
       item['class'] = (items.find{|b|b["class"] == 'bad'}) ? 'bad' : 'good'
       item['url'] = items.count ? 'https://travis-ci.org/%s' % repo_slug : ''
       # Only show items if some are failing
