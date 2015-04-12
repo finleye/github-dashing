@@ -38,10 +38,9 @@ servers = [
   }
 ]
 
-SCHEDULER.every '300s', :first_in => 0 do |job|
-  statuses = Array.new
+SCHEDULER.every '2m', first_in: '0s' do |job|
+  statuses = []
 
-  # check status for each server
   servers.each do |server|
     begin
       conn = Faraday.new(url: server[:url])
@@ -49,9 +48,9 @@ SCHEDULER.every '300s', :first_in => 0 do |job|
       request = conn.get server[:path]
       result = (request.status == 200) ? 1 : 0
     rescue => e
+
       result = 0
     end
-
 
     if result == 1
       arrow = "icon-ok-sign"

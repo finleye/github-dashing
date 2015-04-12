@@ -25,5 +25,7 @@ SCHEDULER.every '5m', :first_in => '1s' do |job|
     send_event("#{state.gsub('_','-')}-count", { current: count, last: count })
   end
 
-  send_event('progress', { value: ((state_counts["done"].to_f/issues.count.to_f)*100).round(0) })
+  progress = ((state_counts["done"].to_f/issues.count.to_f)*100).round(0)
+  more_info = "#{state_counts["done"]} of #{issues.count} tickets closed"
+  send_event('progress', { value: progress, moreinfo: more_info })
 end

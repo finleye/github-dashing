@@ -9,10 +9,9 @@ require_relative 'event'
 require_relative 'event_collection'
 
 class GithubBackend
-
   attr_accessor :logger
 
-  def initialize(args={})
+  def initialize(args = {})
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG unless ENV['RACK_ENV'] == 'production'
   end
