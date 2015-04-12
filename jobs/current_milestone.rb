@@ -13,5 +13,7 @@ SCHEDULER.every '4h', :first_in => '1s' do |job|
     :since=>ENV['SINCE']
   )
 
-  send_event('header',   { text: "#{current_milestone.title} due in #{current_milestone.due_in.to_i} day#{'s' if current_milestone.due_in.to_i > 1}"})
+  header_text = "#{current_milestone.title} due in #{current_milestone.due_in.to_i} day#{'s' if current_milestone.due_in.to_i > 1}"
+  due_date = "Due on #{current_milestone.due_at}"
+  send_event('header',   { text: header_text, moreinfo: due_date})
 end

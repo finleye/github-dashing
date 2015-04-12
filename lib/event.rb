@@ -13,7 +13,7 @@ module GithubDashing
     # Optional value
     attr_accessor :value
 
-    attr_accessor :repo, :milestone, :due_in, :title
+    attr_accessor :repo, :milestone, :due_in, :title, :due_at
 
     def initialize(args={})
       args.each do |k,v|

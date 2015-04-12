@@ -64,7 +64,8 @@ class GithubBackend
       milestones = request('list_milestones', [repo, {}])
       current_release = milestones.select{|m| m.state == 'open' && m.due_on.present? }.sort_by{|m| m.due_on}.first
       due_in = (current_release.due_on.beginning_of_day - Time.now.utc.beginning_of_day) / 1.day
-      event = GithubDashing::Event.new({ title: current_release.title, due_in: due_in })
+      due_at = current_release.due_on.strftime("%A, %e %B %Y")
+      event = GithubDashing::Event.new({ title: current_release.title, due_in: due_in, due_at: due_at })
     rescue Octokit::Error => exception
       Raven.capture_exception(exception)
     end
