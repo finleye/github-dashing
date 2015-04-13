@@ -3,15 +3,20 @@ require 'faraday'
 
 servers = [
   {
-    name: 'Rza',
-    url: 'http://rza-production.elasticbeanstalk.com/stats',
+    name: 'Rza - Stats',
+    url: 'http://rza-production.elasticbeanstalk.com',
     path: '/stats',
     auth: 'basic',
     user: ENV['RZA_USER'],
     pass: ENV['RZA_PASS']
   },
   {
-    name: 'ES Master 1',
+    name: 'Rza - CTS',
+    url: 'http://rza-production.elasticbeanstalk.com',
+    path: '/insights/rollup/current?s_id=content_strategist_test',
+  },
+  {
+    name: 'Insights ES 1',
     url: 'http://insights-cluster-master-1.contentlycontrol.com:8080',
     path: '/_status',
     auth: 'basic',
@@ -19,7 +24,7 @@ servers = [
     pass: ENV['ES_PASS']
   },
   {
-    name: 'ES Master 2',
+    name: 'Insights ES 2',
     url: 'http://insights-cluster-master-2.contentlycontrol.com:8080',
     path: '/_status',
     auth: 'basic',
@@ -37,6 +42,8 @@ servers = [
     path: '/signin'
   }
 ]
+
+'http://rza-production.elasticbeanstalk.com/insights/rollup/current?s_id=content_strategist_test'
 
 SCHEDULER.every '2m', first_in: '0s' do |job|
   statuses = []

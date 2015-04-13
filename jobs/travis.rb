@@ -15,7 +15,7 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
   builds = []
 
   # Only look at release branches (x.y) and master, not at tags (x.y.z)
-  branch_whitelist = /^(\d+\.\d+.*$|master)/
+  branch_whitelist = /.*/
   branch_blacklist_by_repo = {}
   branch_blacklist_by_repo = JSON.parse(ENV['TRAVIS_BRANCH_BLACKLIST']) if ENV['TRAVIS_BRANCH_BLACKLIST']
 
@@ -49,7 +49,9 @@ SCHEDULER.every '2m', :first_in => '1s' do |job|
           commit = repo_branches['commits'].find{|commit|commit['id'] == branch['commit_id']}
           branch_name = commit['branch']
 
-          if not branch_whitelist.match(branch_name)
+          if branch_name.blank?
+            false
+          elsif not branch_whitelist.match(branch_name)
             false
           elsif Time.parse(branch['finished_at']).beginning_of_day < 4.weeks.ago
             false

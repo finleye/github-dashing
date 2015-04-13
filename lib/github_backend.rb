@@ -80,13 +80,13 @@ class GithubBackend
     self.get_repos(opts).each do |repo|
       begin
         pulls = request('pulls', [repo, {:state => 'all', :since => opts.since}])
-        pulls.select! {|pull|pull.created_at.to_datetime > opts.since.to_datetime}
+        pulls.select! { |pull| pull.created_at.to_datetime > opts.since.to_datetime }
+        pulls.select! { |pull| pull.state == 'open' }
         pulls.each do |pull|
-          state_desc = (pull.state == 'open') ? 'opened' : 'closed'
           events << GithubDashing::Event.new({
-            type: "pull_count_#{state_desc}",
+            title: pull.title,
             datetime: pull.created_at.to_datetime,
-            key: pull.state.dup,
+            key: (pull.assignee.login rescue "unasigned"),
             value: 1
           })
         end

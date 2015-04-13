@@ -55,9 +55,16 @@
       <div
         data-id="done-count"
         data-view="Number"
-        data-title="Done Count">
+        data-title="Done">
       </div>
     </li>
+    <%#<li data-row="3" data-col="1" data-sizex="1" data-sizey="1">%>
+      <%#<div%>
+        <%#data-id="open-pr-count"%>
+        <%#data-view="Number"%>
+        <%#data-title="Open PRs">%>
+      <%#</div>%>
+    <%#</li>%>
     <li data-row="3" data-col="1" data-sizex="2" data-sizey="2">
       <div
         data-id="progress"
@@ -67,25 +74,26 @@
         data-max="100">
       </div>
     </li>
-    <li data-row="3" data-col="3" data-sizex="1" data-sizey="2">
+    <li data-row="3" data-col="3" data-sizex="2" data-sizey="2">
+      <div
+        data-id="open-prs"
+        data-view="List"
+        data-unordered="true"
+        data-title="Open PRs"
+        data-moreinfo="Number of Open PRs"></div>
+    </li>
+    <li data-row="3" data-col="5" data-sizex="1" data-sizey="2">
       <div
         data-id="server-status"
         data-view="ServerStatus"
         data-title="Server Status">
       </div>
     </li>
-    <li data-row="3" data-col="4" data-sizex="2" data-sizey="2">
+    <li data-row="3" data-col="6" data-sizex="2" data-sizey="2">
       <div
         data-id="travis"
         data-view="NestedList"
         data-title="Travis Build Status">
-      </div>
-    </li>
-    <li data-row="4" data-col="6" data-sizex="2" data-sizey="1">
-      <div
-        data-id="open-pr-count"
-        data-view="Number"
-        data-title="Open PRs">
       </div>
     </li>
   </ul>

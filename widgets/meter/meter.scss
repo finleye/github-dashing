@@ -4,7 +4,7 @@
 $background-color:  #dc5945;
 
 $title-color:       rgba(255, 255, 255, 0.7);
-$moreinfo-color:    rgba(255, 255, 255, 0.3);
+$moreinfo-color:    rgba(255, 255, 255, 1);
 
 $meter-background:  rgba(255, 255, 255, 0.3);
 
@@ -26,7 +26,9 @@ $meter-background:  rgba(255, 255, 255, 0.3);
   }
 
   .more-info {
+    font-size: 32px;
     color: $moreinfo-color;
+    bottom: 52px;
   }
 
   .updated-at {
